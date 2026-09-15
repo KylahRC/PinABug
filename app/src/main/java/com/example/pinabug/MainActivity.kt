@@ -2,14 +2,17 @@ package com.example.pinabug
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.core.app.ActivityCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import org.osmdroid.config.Configuration
 import org.osmdroid.views.MapView
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -23,16 +26,17 @@ class MainActivity : ComponentActivity() {
     private var user: FirebaseUser? = null
 
     private lateinit var map: MapView
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private val locationPermissionCode = 100
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         Log.d("MainActivity", "onCreate started")
 
         try {
             Configuration.getInstance().userAgentValue = packageName
-
             setContentView(R.layout.activity_main)
             Log.d("MainActivity", "Layout set successfully")
 
@@ -46,6 +50,9 @@ class MainActivity : ComponentActivity() {
             map.setTileSource(TileSourceFactory.OpenTopo)
             map.setMultiTouchControls(true)
             Log.d("MainActivity", "Map initialized")
+
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+            requestLocationPermission()
 
             if (user == null) {
                 Log.w("MainActivity", "No user logged in, redirecting to Login")
@@ -66,21 +73,62 @@ class MainActivity : ComponentActivity() {
                 finish()
             }
 
-            val controller = map.controller
-            controller.setZoom(15.0)
-            controller.setCenter(GeoPoint(-33.9249, 18.4241))
-            Log.d("MainActivity", "Map centered on Cape Town")
-
-            val marker = Marker(map)
-            marker.position = GeoPoint(-33.9249, 18.4241)
-            marker.title = "Bug spotted!"
-            map.overlays.add(marker)
-            Log.d("MainActivity", "Test marker added")
-
         } catch (e: Exception) {
             Log.e("MainActivity", "Error in onCreate: ${e.message}", e)
         }
 
         Log.d("MainActivity", "onCreate finished")
+    }
+
+    private fun requestLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                locationPermissionCode
+            )
+        } else {
+            getUserLocation()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getUserLocation() {
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                if (location != null) {
+                    val userPoint = GeoPoint(location.latitude, location.longitude)
+                    map.controller.setZoom(15.0)
+                    map.controller.setCenter(userPoint)
+
+                    val marker = Marker(map)
+                    marker.position = userPoint
+                    marker.title = "You are here"
+                    map.overlays.add(marker)
+
+                    Log.i("Location", "User location: ${location.latitude}, ${location.longitude}")
+                } else {
+                    Log.w("Location", "No location available")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Location", "Failed to get location: ${e.message}", e)
+            }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,   // ✅ must be Array<String>
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == locationPermissionCode && grantResults.isNotEmpty()
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            getUserLocation()
+        } else {
+            Log.e("Location", "Permission denied")
+        }
     }
 }
