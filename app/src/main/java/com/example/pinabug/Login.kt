@@ -33,7 +33,7 @@ class Login : AppCompatActivity()
     private var textView: TextView? = null
     //endregion
 
-    //region Main Logic
+    //region Start Logic
     public override fun onStart()
     {
         super.onStart()
@@ -58,7 +58,9 @@ class Login : AppCompatActivity()
             Log.e("Login", "Error in onStart: ${e.message}", e)
         }
     }
+    //endregion
 
+    //region Main Logic
     @Suppress("ObjectLiteralToLambda")
     override fun onCreate(savedInstanceState: Bundle?)
     {

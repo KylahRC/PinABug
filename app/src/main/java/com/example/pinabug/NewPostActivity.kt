@@ -1,11 +1,18 @@
+//region Packages
 package com.example.pinabug
+//endregion
 
+//region Imports
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+//endregion
 
-class NewPostActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+//region NewPostActivity Class
+class NewPostActivity : AppCompatActivity()
+{
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_post)
 
@@ -15,3 +22,4 @@ class NewPostActivity : AppCompatActivity() {
 
     }
 }
+//endregion

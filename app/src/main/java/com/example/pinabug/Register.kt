@@ -1,7 +1,8 @@
+//region Packages
 package com.example.pinabug
+//endregion
 
-import android.content.ContentValues
-import android.content.Context
+//region Imports
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
@@ -17,102 +18,176 @@ import com.google.android.gms.tasks.Task
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+//endregion
 
-//import androidx.activity.enableEdgeToEdge;
-class Register : AppCompatActivity() {
-    //Declare the object
-    var editTextEmail: TextInputEditText? = null
-    var editTextPassword: TextInputEditText? = null
-    var buttonReg: Button? = null
-    var mAuth: FirebaseAuth? = null
-    var progressBar: ProgressBar? = null
-    var textView: TextView? = null
+//region Register Class
+class Register : AppCompatActivity()
+{
 
-    public override fun onStart() {
+    //region Fields
+    private var editTextEmail: TextInputEditText? = null
+    private var editTextPassword: TextInputEditText? = null
+    private var buttonReg: Button? = null
+    private var mAuth: FirebaseAuth? = null
+    private var progressBar: ProgressBar? = null
+    private var textView: TextView? = null
+    //endregion
+
+    //region Start Logic
+    public override fun onStart()
+    {
         super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = mAuth!!.getCurrentUser()
-        if (currentUser != null) {
-            val intent = Intent(getApplicationContext(), MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-    }
+        Log.d("Register", "onStart called")
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
-        mAuth = FirebaseAuth.getInstance()
-
-        // Initialise the objects
-        editTextEmail = findViewById<TextInputEditText>(R.id.email)
-        editTextPassword = findViewById<TextInputEditText>(R.id.password)
-        buttonReg = findViewById<Button>(R.id.btn_register)
-        progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        textView = findViewById<TextView>(R.id.loginNow)
-        textView!!.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                val intent = Intent(getApplicationContext(), Login::class.java)
-                startActivity(intent)
+        try
+        {
+            val currentUser = mAuth?.currentUser
+            if (currentUser != null)
+            {
+                Log.i("Register", "User already signed in: ${currentUser.email}")
+                startActivity(Intent(applicationContext, MainActivity::class.java))
                 finish()
             }
-        })
-        buttonReg!!.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                progressBar!!.setVisibility(View.VISIBLE)
-                val email: String?
-                val password: String?
-                email = editTextEmail!!.getText().toString().toString()
-                password = editTextPassword!!.getText().toString().toString()
-
-                if (TextUtils.isEmpty(email)) {
-                    val context: Context?
-                    val text: String?
-                    Toast.makeText(
-                        this@Register.also { context = it },
-                        "Enter email".also { text = it },
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return
-                }
-                if (TextUtils.isEmpty(password)) {
-                    val context: Context?
-                    val text: String?
-                    Toast.makeText(
-                        this@Register.also { context = it },
-                        "Enter Password".also { text = it },
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return
-                }
-                mAuth!!.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(object : OnCompleteListener<AuthResult?> {
-                        override fun onComplete(task: Task<AuthResult?>) {
-                            progressBar!!.setVisibility(View.GONE)
-                            if (task.isSuccessful()) {
-                                val context: Context?
-                                var text: String?
-                                Toast.makeText(
-                                    this@Register.also { context = it }, "Account Created.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                val context: Context?
-                                var text: String?
-                                Log.w(
-                                    ContentValues.TAG,
-                                    "createUserWithEmail:failure",
-                                    task.getException()
-                                )
-                                Toast.makeText(
-                                    this@Register.also { context = it }, "Authentication failed.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    })
+            else
+            {
+                Log.d("Register", "No user signed in at start")
             }
-        })
+        }
+        catch (e: Exception)
+        {
+            Log.e("Register", "Error in onStart: ${e.message}", e)
+        }
     }
+    //endregion
+
+    //region Main Logic
+    @Suppress("ObjectLiteralToLambda")
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        Log.d("Register", "onCreate started")
+
+        try
+        {
+            setContentView(R.layout.activity_register)
+            Log.d("Register", "Layout set successfully")
+
+            //region Firebase Setup
+            mAuth = FirebaseAuth.getInstance()
+            Log.d("Register", "FirebaseAuth initialized")
+            //endregion
+
+            //region UI References
+            editTextEmail = findViewById(R.id.email)
+            editTextPassword = findViewById(R.id.password)
+            buttonReg = findViewById(R.id.btn_register)
+            progressBar = findViewById(R.id.progressBar)
+            textView = findViewById(R.id.loginNow)
+            //endregion
+
+            //region Login Navigation
+            textView?.setOnClickListener {
+                try
+                {
+                    Log.d("Register", "Login link clicked")
+                    startActivity(Intent(applicationContext, Login::class.java))
+                    finish()
+                }
+                catch (e: Exception)
+                {
+                    Log.e("Register", "Failed to open Login: ${e.message}", e)
+                }
+            }
+            //endregion
+
+            //region Register Button
+            buttonReg?.setOnClickListener {
+                try
+                {
+                    Log.d("Register", "Register button clicked")
+                    progressBar?.visibility = View.VISIBLE
+
+                    //region Values
+                    val email = editTextEmail?.text?.toString()?.trim()
+                    val password = editTextPassword?.text?.toString()?.trim()
+                    //endregion
+
+                    //region Empty Email
+                    if (TextUtils.isEmpty(email))
+                    {
+                        Toast.makeText(this, "Enter email", Toast.LENGTH_SHORT).show()
+                        Log.w("Register", "Email field empty")
+                        progressBar?.visibility = View.GONE
+                        return@setOnClickListener
+                    }
+                    //endregion
+
+                    //region Empty Password
+                    if (TextUtils.isEmpty(password))
+                    {
+                        Toast.makeText(this, "Enter Password", Toast.LENGTH_SHORT).show()
+                        Log.w("Register", "Password field empty")
+                        progressBar?.visibility = View.GONE
+                        return@setOnClickListener
+                    }
+                    //endregion
+
+                    //region Firebase Account Creation
+                    mAuth?.createUserWithEmailAndPassword(email!!, password!!)
+                        ?.addOnCompleteListener(object : OnCompleteListener<AuthResult?>
+                        {
+                            override fun onComplete(task: Task<AuthResult?>)
+                            {
+                                progressBar?.visibility = View.GONE
+                                try
+                                {
+                                    if (task.isSuccessful)
+                                    {
+                                        Log.i("Register", "Account created for $email")
+                                        Toast.makeText(
+                                            applicationContext,
+                                            "Account Created.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        startActivity(Intent(applicationContext, MainActivity::class.java))
+                                        finish()
+                                    }
+                                    else
+                                    {
+                                        Log.w("Register", "Account creation failed: ${task.exception?.message}", task.exception)
+                                        Toast.makeText(
+                                            this@Register,
+                                            "Authentication failed.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                                catch (e: Exception)
+                                {
+                                    Log.e("Register", "Error in onComplete: ${e.message}", e)
+                                }
+                            }
+                        })
+                    //endregion
+
+                }
+                catch (e: Exception)
+                {
+                    Log.e("Register", "Register button handler failed: ${e.message}", e)
+                    progressBar?.visibility = View.GONE
+                }
+            }
+            //endregion
+
+        }
+        catch (e: Exception)
+        {
+            Log.e("Register", "Fatal error in onCreate: ${e.message}", e)
+        }
+
+        Log.d("Register", "onCreate finished")
+    }
+    //endregion
 }
+
+//endregion
