@@ -16,7 +16,7 @@
         android:text="New Post Screen"
         android:textSize="20sp"
         app:layout_constraintTop_toBottomOf="@+id/backBtn"
-        tools:ignore="MissingConstraints"
+        tools:ignore="HardcodedText,MissingConstraints"
         tools:layout_editor_absoluteX="16dp" />
 
     <Button
@@ -26,7 +26,7 @@
         android:layout_marginTop="24dp"
         android:text="Back"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints"
+        tools:ignore="HardcodedText,MissingConstraints"
         tools:layout_editor_absoluteX="16dp" />
 
 
