@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PinABug">
+        android:theme="@style/Theme.Material3.Dark.NoActionBar">
         <activity
             android:name=".Register"
             android:theme="@style/Theme.Material3.Dark.NoActionBar"
@@ -39,7 +39,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+        <activity
+            android:name=".NewPostActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PinABug" />
     </application>
 
 </manifest>
