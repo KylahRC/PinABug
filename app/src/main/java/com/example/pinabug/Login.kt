@@ -1,9 +1,12 @@
+//region Packages
 package com.example.pinabug
+//endregion
 
-import android.content.Context
+//region Imports
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -15,101 +18,168 @@ import com.google.android.gms.tasks.Task
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+//endregion
 
-class Login : AppCompatActivity() {
-    var editTextEmail: TextInputEditText? = null
-    var editTextPassword: TextInputEditText? = null
-    var buttonLogin: Button? = null
-    var mAuth: FirebaseAuth? = null
-    var progressBar: ProgressBar? = null
-    var textView: TextView? = null
+//region Login Class
+class Login : AppCompatActivity()
+{
 
-    public override fun onStart() {
+    //region Fields
+    private var editTextEmail: TextInputEditText? = null
+    private var editTextPassword: TextInputEditText? = null
+    private var buttonLogin: Button? = null
+    private var mAuth: FirebaseAuth? = null
+    private var progressBar: ProgressBar? = null
+    private var textView: TextView? = null
+    //endregion
+
+    //region Main Logic
+    public override fun onStart()
+    {
         super.onStart()
-        // Check if user is signed in (non-null)
-        val currentUser = mAuth!!.getCurrentUser()
-        if (currentUser != null) {
-            val intent = Intent(getApplicationContext(), MainActivity::class.java)
-            startActivity(intent)
-            finish()
+        Log.d("Login", "onStart called")
+
+        try
+        {
+            val currentUser = mAuth?.currentUser
+            if (currentUser != null)
+            {
+                Log.i("Login", "User already signed in: ${currentUser.email}")
+                startActivity(Intent(applicationContext, MainActivity::class.java))
+                finish()
+            }
+            else
+            {
+                Log.d("Login", "No user signed in at start")
+            }
+        }
+        catch (e: Exception)
+        {
+            Log.e("Login", "Error in onStart: ${e.message}", e)
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    @Suppress("ObjectLiteralToLambda")
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
+        Log.d("Login", "onCreate started")
 
-        setContentView(R.layout.activity_login)
-        mAuth = FirebaseAuth.getInstance()
+        try
+        {
+            setContentView(R.layout.activity_login)
+            Log.d("Login", "Layout set successfully")
 
-        // Initialise the objects
-        editTextEmail = findViewById<TextInputEditText>(R.id.email)
-        editTextPassword = findViewById<TextInputEditText>(R.id.password)
-        buttonLogin = findViewById<Button>(R.id.btn_login)
-        progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        textView = findViewById<TextView>(R.id.registerNow)
-        textView!!.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                val intent = Intent(getApplicationContext(), Register::class.java)
-                startActivity(intent)
-                finish()
+            //region Firebase Setup
+            mAuth = FirebaseAuth.getInstance()
+            Log.d("Login", "FirebaseAuth initialized")
+            //endregion
+
+            //region UI References
+            editTextEmail = findViewById(R.id.email)
+            editTextPassword = findViewById(R.id.password)
+            buttonLogin = findViewById(R.id.btn_login)
+            progressBar = findViewById(R.id.progressBar)
+            textView = findViewById(R.id.registerNow)
+            //endregion
+
+            //region Register Navigation
+            textView?.setOnClickListener {
+                try
+                {
+                    Log.d("Login", "Register link clicked")
+                    startActivity(Intent(applicationContext, Register::class.java))
+                    finish()
+                }
+                catch (e: Exception)
+                {
+                    Log.e("Login", "Failed to open Register: ${e.message}", e)
+                }
             }
-        })
-        buttonLogin!!.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                progressBar!!.setVisibility(View.VISIBLE)
-                val email: String?
-                val password: String?
-                email = editTextEmail!!.getText().toString().toString()
-                password = editTextPassword!!.getText().toString().toString()
+            //endregion
 
-                if (TextUtils.isEmpty(email)) {
-                    val context: Context?
-                    val text: String?
-                    Toast.makeText(
-                        this@Login.also { context = it },
-                        "Enter email".also { text = it },
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return
-                }
-                if (TextUtils.isEmpty(password)) {
-                    val context: Context?
-                    val text: String?
-                    Toast.makeText(
-                        this@Login.also { context = it },
-                        "Enter Password".also { text = it },
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return
-                }
+            //region Login Button
+            buttonLogin?.setOnClickListener {
+                try
+                {
+                    Log.d("Login", "Login button clicked")
+                    progressBar?.visibility = View.VISIBLE
 
-                mAuth!!.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(object : OnCompleteListener<AuthResult?> {
-                        override fun onComplete(task: Task<AuthResult?>) {
-                            progressBar!!.setVisibility(View.GONE)
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                val text: String?
-                                Toast.makeText(
-                                    getApplicationContext(),
-                                    "Login Successful".also { text = it },
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                val intent =
-                                    Intent(getApplicationContext(), MainActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            } else {
-                                // If sign in fails, display a message to the user.
+                    val email = editTextEmail?.text?.toString()?.trim()
+                    val password = editTextPassword?.text?.toString()?.trim()
 
-                                Toast.makeText(
-                                    this@Login, "Authentication failed.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                    if (TextUtils.isEmpty(email))
+                    {
+                        Toast.makeText(this, "Enter email", Toast.LENGTH_SHORT).show()
+                        Log.w("Login", "Email field empty")
+                        progressBar?.visibility = View.GONE
+                        return@setOnClickListener
+                    }
+
+                    if (TextUtils.isEmpty(password))
+                    {
+                        Toast.makeText(this, "Enter Password", Toast.LENGTH_SHORT).show()
+                        Log.w("Login", "Password field empty")
+                        progressBar?.visibility = View.GONE
+                        return@setOnClickListener
+                    }
+
+                    //region Firebase Sign-In
+                    mAuth?.signInWithEmailAndPassword(email!!, password!!)
+                        ?.addOnCompleteListener(object : OnCompleteListener<AuthResult?>
+                        {
+                            override fun onComplete(task: Task<AuthResult?>)
+                            {
+                                progressBar?.visibility = View.GONE
+                                try
+                                {
+                                    if (task.isSuccessful)
+                                    {
+                                        Log.i("Login", "Login successful for $email")
+                                        Toast.makeText(
+                                            applicationContext,
+                                            "Login Successful",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        startActivity(Intent(applicationContext, MainActivity::class.java))
+                                        finish()
+                                    }
+                                    else
+                                    {
+                                        Log.e("Login", "Authentication failed: ${task.exception?.message}", task.exception)
+                                        Toast.makeText(
+                                            this@Login,
+                                            "Authentication failed.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                                catch (e: Exception)
+                                {
+                                    Log.e("Login", "Error in onComplete: ${e.message}", e)
+                                }
                             }
-                        }
-                    })
+                        })
+                    //endregion
+
+                }
+                catch (e: Exception)
+                {
+                    Log.e("Login", "Login button handler failed: ${e.message}", e)
+                    progressBar?.visibility = View.GONE
+                }
             }
-        })
+            //endregion
+
+        }
+        catch (e: Exception)
+        {
+            Log.e("Login", "Fatal error in onCreate: ${e.message}", e)
+        }
+
+        Log.d("Login", "onCreate finished")
     }
+    //endregion
 }
+
+//endregion
