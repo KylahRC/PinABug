@@ -30,6 +30,11 @@ class MainActivity : ComponentActivity() {
 
     private val locationPermissionCode = 100
 
+
+    var openNewPostBtn: Button? = null
+
+
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +48,8 @@ class MainActivity : ComponentActivity() {
             auth = FirebaseAuth.getInstance()
             button = findViewById(R.id.logout)
 //            textView = findViewById(R.id.user_details)
+
+            openNewPostBtn = findViewById(R.id.openNewPostBtn)
             user = auth?.currentUser
             Log.d("MainActivity", "FirebaseAuth initialized, user = ${user?.email ?: "null"}")
 
@@ -72,6 +79,13 @@ class MainActivity : ComponentActivity() {
                 startActivity(intent)
                 finish()
             }
+
+            openNewPostBtn?.setOnClickListener {
+                Log.d("MainActivity", "New post button clicked")
+                val intent = Intent(this, NewPostActivity::class.java)
+                startActivity(intent)
+            }
+
 
         } catch (e: Exception) {
             Log.e("MainActivity", "Error in onCreate: ${e.message}", e)
