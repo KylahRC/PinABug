@@ -6,7 +6,6 @@ package com.example.pinabug
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -37,26 +36,31 @@ class Register : AppCompatActivity()
     public override fun onStart()
     {
         super.onStart()
-        Log.d("Register", "onStart called")
+        AppLogs.log("Register", "onStart called")
 
+        //region Check Status
         try
         {
             val currentUser = mAuth?.currentUser
+
             if (currentUser != null)
             {
-                Log.i("Register", "User already signed in: ${currentUser.email}")
+                AppLogs.log("Register", "User already signed in: ${currentUser.email}")
                 startActivity(Intent(applicationContext, MainActivity::class.java))
                 finish()
             }
             else
             {
-                Log.d("Register", "No user signed in at start")
+                AppLogs.log("Register", "No user signed in at start")
             }
+
         }
         catch (e: Exception)
         {
-            Log.e("Register", "Error in onStart: ${e.message}", e)
+            AppLogs.log("Register", "Error in onStart: ${e.message}")
         }
+
+    //endregion
     }
     //endregion
 
@@ -65,16 +69,16 @@ class Register : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        Log.d("Register", "onCreate started")
+        AppLogs.log("Register", "onCreate started")
 
         try
         {
             setContentView(R.layout.activity_register)
-            Log.d("Register", "Layout set successfully")
+            AppLogs.log("Register", "Layout set successfully")
 
             //region Firebase Setup
             mAuth = FirebaseAuth.getInstance()
-            Log.d("Register", "FirebaseAuth initialized")
+            AppLogs.log("Register", "FirebaseAuth initialized")
             //endregion
 
             //region UI References
@@ -89,13 +93,13 @@ class Register : AppCompatActivity()
             textView?.setOnClickListener {
                 try
                 {
-                    Log.d("Register", "Login link clicked")
+                    AppLogs.log("Register", "Login link clicked")
                     startActivity(Intent(applicationContext, Login::class.java))
                     finish()
                 }
                 catch (e: Exception)
                 {
-                    Log.e("Register", "Failed to open Login: ${e.message}", e)
+                    AppLogs.log("Register", "Failed to open Login: ${e.message}")
                 }
             }
             //endregion
@@ -104,29 +108,27 @@ class Register : AppCompatActivity()
             buttonReg?.setOnClickListener {
                 try
                 {
-                    Log.d("Register", "Register button clicked")
+                    AppLogs.log("Register", "Register button clicked")
                     progressBar?.visibility = View.VISIBLE
 
-                    //region Values
                     val email = editTextEmail?.text?.toString()?.trim()
                     val password = editTextPassword?.text?.toString()?.trim()
-                    //endregion
 
-                    //region Empty Email
+                    //region Check Email feild
                     if (TextUtils.isEmpty(email))
                     {
                         Toast.makeText(this, "Enter email", Toast.LENGTH_SHORT).show()
-                        Log.w("Register", "Email field empty")
+                        AppLogs.log("Register", "Email field empty")
                         progressBar?.visibility = View.GONE
                         return@setOnClickListener
                     }
                     //endregion
 
-                    //region Empty Password
+                    //region Check Password feild
                     if (TextUtils.isEmpty(password))
                     {
                         Toast.makeText(this, "Enter Password", Toast.LENGTH_SHORT).show()
-                        Log.w("Register", "Password field empty")
+                        AppLogs.log("Register", "Password field empty")
                         progressBar?.visibility = View.GONE
                         return@setOnClickListener
                     }
@@ -143,7 +145,7 @@ class Register : AppCompatActivity()
                                 {
                                     if (task.isSuccessful)
                                     {
-                                        Log.i("Register", "Account created for $email")
+                                        AppLogs.log("Register", "Account created for $email")
                                         Toast.makeText(
                                             applicationContext,
                                             "Account Created.",
@@ -154,7 +156,7 @@ class Register : AppCompatActivity()
                                     }
                                     else
                                     {
-                                        Log.w("Register", "Account creation failed: ${task.exception?.message}", task.exception)
+                                        AppLogs.log("Register", "Account creation failed: ${task.exception?.message}")
                                         Toast.makeText(
                                             this@Register,
                                             "Authentication failed.",
@@ -164,7 +166,7 @@ class Register : AppCompatActivity()
                                 }
                                 catch (e: Exception)
                                 {
-                                    Log.e("Register", "Error in onComplete: ${e.message}", e)
+                                    AppLogs.log("Register", "Error in onComplete: ${e.message}")
                                 }
                             }
                         })
@@ -173,7 +175,7 @@ class Register : AppCompatActivity()
                 }
                 catch (e: Exception)
                 {
-                    Log.e("Register", "Register button handler failed: ${e.message}", e)
+                    AppLogs.log("Register", "Register button handler failed: ${e.message}")
                     progressBar?.visibility = View.GONE
                 }
             }
@@ -182,12 +184,11 @@ class Register : AppCompatActivity()
         }
         catch (e: Exception)
         {
-            Log.e("Register", "Fatal error in onCreate: ${e.message}", e)
+            AppLogs.log("Register", "Fatal error in onCreate: ${e.message}")
         }
 
-        Log.d("Register", "onCreate finished")
+        AppLogs.log("Register", "onCreate finished")
     }
     //endregion
 }
-
 //endregion
