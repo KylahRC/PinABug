@@ -10,5 +10,8 @@ As of latest commit:
 - User can toggle different themes in settings
 - User can erase post history in settings
 
+# Video Presentation
+Find the video in my submission via ARC, as I did not feel comfortable uploading the video to YouTube as the app uses location services, even as an unlisted video.
+
 # AI Disclosure
 My use of AI tools falls within the guidelines outlined in the 2026 AI Guidelines. I maintain all creative control, meaning the ideas and how they look in the app was decided entirely by me. All code snippets and debugging assistance received was thoroughly reformatted and tested by me on my personal device, as seen by my distinct code formatting style.
