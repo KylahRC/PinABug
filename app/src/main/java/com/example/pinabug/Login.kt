@@ -6,6 +6,7 @@ package com.example.pinabug
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -37,6 +38,7 @@ class Login : AppCompatActivity()
     {
         super.onStart()
         AppLogs.log("Login", "onStart called")
+        Log.d("Login", "onStart called")
 
         try
         {
@@ -44,17 +46,20 @@ class Login : AppCompatActivity()
             if (currentUser != null)
             {
                 AppLogs.log("Login", "User already signed in: ${currentUser.email}")
+                Log.d("Login", "User already signed in: ${currentUser.email}")
                 startActivity(Intent(applicationContext, MainActivity::class.java))
                 finish()
             }
             else
             {
                 AppLogs.log("Login", "No user signed in at start")
+                Log.d("Login", "No user signed in at start")
             }
         }
         catch (e: Exception)
         {
             AppLogs.log("Login", "Error in onStart: ${e.message}")
+            Log.e("Login", "Error in onStart: ${e.message}")
         }
     }
     //endregion
@@ -65,15 +70,18 @@ class Login : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
         AppLogs.log("Login", "onCreate started")
+        Log.d("Login", "onCreate started")
 
         try
         {
             setContentView(R.layout.activity_login)
             AppLogs.log("Login", "Layout set successfully")
+            Log.d("Login", "Layout set successfully")
 
             //region Firebase Setup
             mAuth = FirebaseAuth.getInstance()
             AppLogs.log("Login", "FirebaseAuth initialized")
+            Log.d("Login", "FirebaseAuth initialized")
             //endregion
 
             //region UI References
@@ -89,12 +97,14 @@ class Login : AppCompatActivity()
                 try
                 {
                     AppLogs.log("Login", "Register link clicked")
+                    Log.d("Login", "Register link clicked")
                     startActivity(Intent(applicationContext, Register::class.java))
                     finish()
                 }
                 catch (e: Exception)
                 {
                     AppLogs.log("Login", "Failed to open Register: ${e.message}")
+                    Log.e("Login", "Failed to open Register: ${e.message}")
                 }
             }
             //endregion
@@ -104,6 +114,7 @@ class Login : AppCompatActivity()
                 try
                 {
                     AppLogs.log("Login", "Login button clicked")
+                    Log.d("Login", "Login button clicked")
                     progressBar?.visibility = View.VISIBLE
 
                     val email = editTextEmail?.text?.toString()?.trim()
@@ -114,6 +125,7 @@ class Login : AppCompatActivity()
                     {
                         Toast.makeText(this, "Enter email", Toast.LENGTH_SHORT).show()
                         AppLogs.log("Login", "Email field empty")
+                        Log.d("Login", "Email field empty")
                         progressBar?.visibility = View.GONE
                         return@setOnClickListener
                     }
@@ -124,6 +136,7 @@ class Login : AppCompatActivity()
                     {
                         Toast.makeText(this, "Enter Password", Toast.LENGTH_SHORT).show()
                         AppLogs.log("Login", "Password field empty")
+                        Log.d("Login", "Password field empty")
                         progressBar?.visibility = View.GONE
                         return@setOnClickListener
                     }
@@ -131,8 +144,7 @@ class Login : AppCompatActivity()
 
                     //region Firebase Sign-In
                     mAuth?.signInWithEmailAndPassword(email!!, password!!)
-                        ?.addOnCompleteListener(object : OnCompleteListener<AuthResult?>
-                        {
+                        ?.addOnCompleteListener(object : OnCompleteListener<AuthResult?> {
                             override fun onComplete(task: Task<AuthResult?>)
                             {
                                 progressBar?.visibility = View.GONE
@@ -141,6 +153,7 @@ class Login : AppCompatActivity()
                                     if (task.isSuccessful)
                                     {
                                         AppLogs.log("Login", "Login successful for $email")
+                                        Log.d("Login", "Login successful for $email")
                                         Toast.makeText(
                                             applicationContext,
                                             "Login Successful",
@@ -152,6 +165,7 @@ class Login : AppCompatActivity()
                                     else
                                     {
                                         AppLogs.log("Login", "Authentication failed: ${task.exception?.message}")
+                                        Log.e("Login", "Authentication failed: ${task.exception?.message}")
                                         Toast.makeText(
                                             this@Login,
                                             "Authentication failed.",
@@ -162,6 +176,7 @@ class Login : AppCompatActivity()
                                 catch (e: Exception)
                                 {
                                     AppLogs.log("Login", "Error in onComplete: ${e.message}")
+                                    Log.e("Login", "Error in onComplete: ${e.message}")
                                 }
                             }
                         })
@@ -171,6 +186,7 @@ class Login : AppCompatActivity()
                 catch (e: Exception)
                 {
                     AppLogs.log("Login", "Login button handler failed: ${e.message}")
+                    Log.e("Login", "Login button handler failed: ${e.message}")
                     progressBar?.visibility = View.GONE
                 }
             }
@@ -180,11 +196,12 @@ class Login : AppCompatActivity()
         catch (e: Exception)
         {
             AppLogs.log("Login", "Fatal error in onCreate: ${e.message}")
+            Log.e("Login", "Fatal error in onCreate: ${e.message}")
         }
 
         AppLogs.log("Login", "onCreate finished")
+        Log.d("Login", "onCreate finished")
     }
     //endregion
-
 }
 //endregion

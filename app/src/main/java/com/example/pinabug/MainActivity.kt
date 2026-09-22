@@ -46,7 +46,9 @@ class MainActivity : ComponentActivity()
         //region Custom Logging start
         AppLogs.init(this)
         AppLogs.log("MainActivity", "App started")
-        AppLogs.log( "MainActivity", "onCreate started")
+        Log.d("MainActivity", "App started")
+        AppLogs.log("MainActivity", "onCreate started")
+        Log.d("MainActivity", "onCreate started")
         //endregion
 
         //region Setups and Calls
@@ -55,13 +57,15 @@ class MainActivity : ComponentActivity()
             //region Layout Setup
             Configuration.getInstance().userAgentValue = packageName
             setContentView(R.layout.activity_main)
-            AppLogs.log( "MainActivity", "Layout inflated successfully")
+            AppLogs.log("MainActivity", "Layout inflated successfully")
+            Log.d("MainActivity", "Layout inflated successfully")
             //endregion
 
             //region Firebase Setup
             auth = FirebaseAuth.getInstance()
             user = auth?.currentUser
-            AppLogs.log( "MainActivity", "FirebaseAuth initialized, user = ${user?.email ?: "null"}")
+            AppLogs.log("MainActivity", "FirebaseAuth initialized, user = ${user?.email ?: "null"}")
+            Log.d("MainActivity", "FirebaseAuth initialized, user = ${user?.email ?: "null"}")
             //endregion
 
             //region Button Setup
@@ -75,11 +79,13 @@ class MainActivity : ComponentActivity()
                 map = findViewById(R.id.map)
                 map.setTileSource(TileSourceFactory.OpenTopo)
                 map.setMultiTouchControls(true)
-                AppLogs.log( "MainActivity", "Map initialized")
+                AppLogs.log("MainActivity", "Map initialized")
+                Log.d("MainActivity", "Map initialized")
             }
             catch (e: Exception)
             {
-                AppLogs.log( "MainActivity", "Map initialization failed: ${e.message}")
+                AppLogs.log("MainActivity", "Map initialization failed: ${e.message}")
+                Log.e("MainActivity", "Map initialization failed: ${e.message}")
             }
             //endregion
 
@@ -91,49 +97,57 @@ class MainActivity : ComponentActivity()
             }
             catch (e: Exception)
             {
-                AppLogs.log( "MainActivity", "Location client setup failed: ${e.message}")
+                AppLogs.log("MainActivity", "Location client setup failed: ${e.message}")
+                Log.e("MainActivity", "Location client setup failed: ${e.message}")
             }
             //endregion
 
             //region User Login Status
             if (user == null)
             {
-                AppLogs.log( "MainActivity", "No user logged in, redirecting to Login")
+                AppLogs.log("MainActivity", "No user logged in, redirecting to Login")
+                Log.d("MainActivity", "No user logged in, redirecting to Login")
                 startActivity(Intent(applicationContext, Login::class.java))
                 finish()
             }
             else
             {
                 textView?.text = user?.email
-                AppLogs.log( "MainActivity", "User logged in: ${user?.email}")
+                AppLogs.log("MainActivity", "User logged in: ${user?.email}")
+                Log.d("MainActivity", "User logged in: ${user?.email}")
             }
             //endregion
 
             //region Button Listeners
-            logoutBtn?.setOnClickListener { //WHY does Kotlin REFUSE to let me move this bracket??? Picky language...
+            logoutBtn?.setOnClickListener {
                 try
                 {
-                    AppLogs.log( "MainActivity", "Logout button clicked")
+                    AppLogs.log("MainActivity", "Logout button clicked")
+                    Log.d("MainActivity", "Logout button clicked")
                     FirebaseAuth.getInstance().signOut()
-                    AppLogs.log( "MainActivity", "User signed out")
+                    AppLogs.log("MainActivity", "User signed out")
+                    Log.d("MainActivity", "User signed out")
                     startActivity(Intent(applicationContext, Login::class.java))
                     finish()
                 }
                 catch (e: Exception)
                 {
-                    AppLogs.log( "MainActivity", "Logout failed: ${e.message}")
+                    AppLogs.log("MainActivity", "Logout failed: ${e.message}")
+                    Log.e("MainActivity", "Logout failed: ${e.message}")
                 }
             }
 
             openNewPostBtn?.setOnClickListener{
                 try
                 {
-                    AppLogs.log( "MainActivity", "New post button clicked")
+                    AppLogs.log("MainActivity", "New post button clicked")
+                    Log.d("MainActivity", "New post button clicked")
                     startActivity(Intent(this, NewPostActivity::class.java))
                 }
                 catch (e: Exception)
                 {
-                    AppLogs.log( "MainActivity", "Failed to open NewPostActivity: ${e.message}")
+                    AppLogs.log("MainActivity", "Failed to open NewPostActivity: ${e.message}")
+                    Log.e("MainActivity", "Failed to open NewPostActivity: ${e.message}")
                 }
             }
             //endregion
@@ -141,11 +155,12 @@ class MainActivity : ComponentActivity()
         }
         catch (e: Exception)
         {
-            AppLogs.log( "MainActivity", "Fatal error in onCreate: ${e.message}")
+            AppLogs.log("MainActivity", "Fatal error in onCreate: ${e.message}")
+            Log.e("MainActivity", "Fatal error in onCreate: ${e.message}")
         }
         //endregion
 
-        AppLogs.log( "MainActivity", "onCreate finished")
+        AppLogs.log("MainActivity", "onCreate finished"); Log.d("MainActivity", "onCreate finished")
     }
     //endregion
 
@@ -156,7 +171,8 @@ class MainActivity : ComponentActivity()
         {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
             {
-                AppLogs.log( "Location", "Requesting fine location permission")
+                AppLogs.log("Location", "Requesting fine location permission")
+                Log.d("Location", "Requesting fine location permission")
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
@@ -165,13 +181,15 @@ class MainActivity : ComponentActivity()
             }
             else
             {
-                AppLogs.log( "Location", "Permission already granted, fetching location")
+                AppLogs.log("Location", "Permission already granted, fetching location")
+                Log.d("Location", "Permission already granted, fetching location")
                 getUserLocation()
             }
         }
         catch (e: Exception)
         {
-            AppLogs.log( "Location", "Permission request failed: ${e.message}")
+            AppLogs.log("Location", "Permission request failed: ${e.message}")
+            Log.e("Location", "Permission request failed: ${e.message}")
         }
     }
     //endregion
@@ -197,25 +215,30 @@ class MainActivity : ComponentActivity()
                             marker.title = "You are here"
                             map.overlays.add(marker)
 
-                            AppLogs.log( "Location", "User location: ${location.latitude}, ${location.longitude}")
+                            AppLogs.log("Location", "User location: ${location.latitude}, ${location.longitude}")
+                            Log.d("Location", "User location: ${location.latitude}, ${location.longitude}")
                         }
                         else
                         {
-                            AppLogs.log( "Location", "No location available")
+                            AppLogs.log("Location", "No location available")
+                            Log.d("Location", "No location available")
                         }
                     }
                     catch (e: Exception)
                     {
-                        AppLogs.log( "Location", "Error handling location result: ${e.message}")
+                        AppLogs.log("Location", "Error handling location result: ${e.message}")
+                        Log.e("Location", "Error handling location result: ${e.message}")
                     }
                 }
                 .addOnFailureListener { e ->
-                    AppLogs.log( "Location", "Failed to get location: ${e.message}")
+                    AppLogs.log("Location", "Failed to get location: ${e.message}")
+                    Log.e("Location", "Failed to get location: ${e.message}")
                 }
         }
         catch (e: Exception)
         {
-            AppLogs.log( "Location", "getUserLocation failed: ${e.message}")
+            AppLogs.log("Location", "getUserLocation failed: ${e.message}")
+            Log.e("Location", "getUserLocation failed: ${e.message}")
         }
     }
     //endregion
@@ -235,17 +258,20 @@ class MainActivity : ComponentActivity()
             if (requestCode == locationPermissionCode && grantResults.isNotEmpty()
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
-                AppLogs.log( "Location", "Permission granted, fetching location")
+                AppLogs.log("Location", "Permission granted, fetching location")
+                Log.d("Location", "Permission granted, fetching location")
                 getUserLocation()
             }
             else
             {
-                AppLogs.log( "Location", "Permission denied")
+                AppLogs.log("Location", "Permission denied")
+                Log.d("Location", "Permission denied")
             }
         }
         catch (e: Exception)
         {
-            AppLogs.log( "Location", "Error in onRequestPermissionsResult: ${e.message}")
+            AppLogs.log("Location", "Error in onRequestPermissionsResult: ${e.message}")
+            Log.e("Location", "Error in onRequestPermissionsResult: ${e.message}")
         }
     }
     //endregion
