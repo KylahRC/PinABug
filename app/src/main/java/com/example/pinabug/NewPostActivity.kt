@@ -3,6 +3,7 @@ package com.example.pinabug
 //endregion
 
 //region Imports
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +12,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.LocationServices
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.File
 //endregion
 
 //region NewPostActivity Class
@@ -66,18 +74,51 @@ class NewPostActivity : AppCompatActivity()
 
             //region Submit Post
             postBtn.setOnClickListener {
-                try
-                {
-                    AppLogs.log("NewPostActivity", "Post button clicked with bug name: ${bugNameInput.text}")
-                    Log.d("NewPostActivity", "Post button clicked with bug name: ${bugNameInput.text}")
+                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+                if (ActivityCompat.checkSelfPermission( //this was a suggested quick fix from Android studio
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return@setOnClickListener
+                }
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    val post = Post(
+                        name = bugNameInput.text.toString(),
+                        imageUri = imageUri?.toString(),
+                        timestamp = System.currentTimeMillis(),
+                        latitude = location?.latitude,
+                        longitude = location?.longitude
+                    )
+                    savePost(post)
+                    finish()
+                }.addOnFailureListener { e ->
+                    AppLogs.log("NewPostActivity", "Failed to get location: ${e.message}")
+                    Log.e("NewPostActivity", "Failed to get location: ${e.message}")
+
+                    val post = Post(
+                        name = bugNameInput.text.toString(),
+                        imageUri = imageUri?.toString(),
+                        timestamp = System.currentTimeMillis(),
+                        latitude = null,
+                        longitude = null
+                    )
+                    savePost(post)
                     finish()
                 }
-                catch (e: Exception)
-                {
-                    AppLogs.log("NewPostActivity", "Error handling Post button: ${e.message}")
-                    Log.e("NewPostActivity", "Error handling Post button: ${e.message}")
-                }
             }
+
+
             //endregion
 
             //region Cancel new post
@@ -134,6 +175,37 @@ class NewPostActivity : AppCompatActivity()
             Log.e("NewPostActivity", "Error handling image result: ${e.message}")
         }
     }
+    //endregion
+
+    //region Save Post Function
+    private fun savePost(post: Post)
+    {
+        val file = File(filesDir, "posts.json")
+        val postsArray: JSONArray =
+            if (file.exists())
+            {
+                JSONArray(file.readText())
+            }
+            else
+            {
+                JSONArray()
+            }
+
+        val postJson = JSONObject().apply {
+            put("name", post.name)
+            put("imageUri", post.imageUri)
+            put("timestamp", post.timestamp)
+            put("latitude", post.latitude)
+            put("longitude", post.longitude)
+        }
+
+        postsArray.put(postJson)
+        file.writeText(postsArray.toString())
+
+        AppLogs.log("NewPostActivity", "Post saved: ${post.name}")
+        Log.d("NewPostActivity", "Post saved: ${post.name}")
+    }
+
     //endregion
 }
 //endregion
