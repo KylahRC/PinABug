@@ -250,6 +250,8 @@ class MainActivity : ComponentActivity()
             }
             //endregion
 
+            loadPinsFromPosts()
+
         }
         catch (e: Exception)
         {
@@ -406,8 +408,70 @@ class MainActivity : ComponentActivity()
     {
         super.onResume()
         loadPostsIntoTextView()
+        loadPinsFromPosts()
     }
     //endregion
+
+    private fun loadPinsFromPosts()
+    {
+        try
+        {
+            val file = File(filesDir, "posts.json")
+            if (!file.exists())
+            {
+                AppLogs.log("MainActivity", "No posts.json found, no pins to load")
+                Log.d("MainActivity", "No posts.json found, no pins to load")
+                return
+            }
+
+            val postsArray = JSONArray(file.readText())
+            for (i in 0 until postsArray.length())
+            {
+                val obj = postsArray.getJSONObject(i)
+                val lat = obj.optDouble("latitude", Double.NaN)
+                val lon = obj.optDouble("longitude", Double.NaN)
+
+                if (!lat.isNaN() && !lon.isNaN())
+                {
+                    val point = GeoPoint(lat, lon)
+                    val marker = Marker(map)
+                    marker.position = point
+                    marker.title = obj.optString("name", "Unknown")
+                    marker.snippet = obj.optString("imageUri", "")
+                    
+                    marker.snippet = "Image: ${obj.optString("imageUri", "None")}\nTime: ${Date(obj.optLong("timestamp"))}"
+                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    // Default behavior: tapping shows title + snippet in a popup
+                    marker.setOnMarkerClickListener { m, _ ->
+                        try
+                        {
+                            m.showInfoWindow()
+                            AppLogs.log("MainActivity", "Pin clicked: ${m.title}")
+                            Log.d("MainActivity", "Pin clicked: ${m.title}")
+                            true
+                        }
+                        catch (e: Exception)
+                        {
+                            AppLogs.log("MainActivity", "Error showing pin info: ${e.message}")
+                            Log.e("MainActivity", "Error showing pin info: ${e.message}")
+                            false
+                        }
+                    }
+                    map.overlays.add(marker)
+                    AppLogs.log("MainActivity", "Pin added: ${marker.title} at $lat,$lon")
+                    Log.d("MainActivity", "Pin added: ${marker.title} at $lat,$lon")
+                }
+            }
+            map.invalidate()
+
+        }
+        catch (e: Exception)
+        {
+            AppLogs.log("MainActivity", "Error loading pins: ${e.message}")
+            Log.e("MainActivity", "Error loading pins: ${e.message}")
+        }
+    }
+
 
 }
 //endregion
