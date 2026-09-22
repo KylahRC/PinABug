@@ -4,15 +4,19 @@ package com.example.pinabug
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.Switch
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import java.io.File
 
 //endregion
 
+//region Settings Activity
 class SettingsActivity : AppCompatActivity()
 {
-
     private lateinit var themeSwitch: Switch
+    private lateinit var clearPostsBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -22,15 +26,15 @@ class SettingsActivity : AppCompatActivity()
         {
             setContentView(R.layout.activity_settings)
             themeSwitch = findViewById(R.id.themeSwitch)
+            clearPostsBtn = findViewById(R.id.clearPostsBtn)
 
-            // Load saved preference
+            //region Theme Toggle
             val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
             val isBrownTheme = prefs.getBoolean("BrownTheme", false)
             themeSwitch.isChecked = isBrownTheme
 
             themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-                try
-                {
+                try {
                     val editor = prefs.edit()
                     editor.putBoolean("BrownTheme", isChecked)
                     editor.apply()
@@ -43,13 +47,40 @@ class SettingsActivity : AppCompatActivity()
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                     finish()
-                }
-                catch (e: Exception)
-                {
+                } catch (e: Exception) {
                     AppLogs.log("SettingsActivity", "Error toggling theme: ${e.message}")
                     Log.e("SettingsActivity", "Error toggling theme: ${e.message}")
                 }
             }
+            //endregion
+
+            //region Clear posts
+            clearPostsBtn.setOnClickListener {
+                try
+                {
+                    val file = File(filesDir, "posts.json")
+                    if (file.exists())
+                    {
+                        file.delete()
+                        AppLogs.log("SettingsActivity", "Post history cleared")
+                        Log.d("SettingsActivity", "Post history cleared")
+                        Toast.makeText(this, "Post history cleared", Toast.LENGTH_SHORT).show()
+                    }
+                    else
+                    {
+                        AppLogs.log("SettingsActivity", "No post history file found")
+                        Log.d("SettingsActivity", "No post history file found")
+                        Toast.makeText(this, "No post history found", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                catch (e: Exception)
+                {
+                    AppLogs.log("SettingsActivity", "Error clearing posts: ${e.message}")
+                    Log.e("SettingsActivity", "Error clearing posts: ${e.message}")
+                    Toast.makeText(this, "Failed to clear posts", Toast.LENGTH_SHORT).show()
+                }
+            }
+            //endregion
         }
         catch (e: Exception)
         {
@@ -58,3 +89,4 @@ class SettingsActivity : AppCompatActivity()
         }
     }
 }
+//endregion
