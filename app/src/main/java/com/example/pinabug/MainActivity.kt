@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.app.ActivityCompat
 import com.google.firebase.auth.FirebaseAuth
@@ -25,6 +26,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.util.Date
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.ActionBarDrawerToggle
 
 //endregion
 
@@ -42,6 +47,8 @@ class MainActivity : ComponentActivity()
     private lateinit var map: MapView
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val locationPermissionCode = 100
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
     //endregion
 
     //region Main Logic
@@ -81,7 +88,75 @@ class MainActivity : ComponentActivity()
             openNewPostBtn = findViewById(R.id.openNewPostBtn)
             //endregion
 
+            //region Load Posts
             postData = findViewById(R.id.postData)
+            AppLogs.log("MainActivity", "Post data loaded")
+            Log.d("MainActivity", "post data loaded")
+            //endregion
+
+            //region Menu
+            try
+            {
+                drawerLayout = findViewById(R.id.drawerLayout)
+                navigationView = findViewById(R.id.navigationView)
+                val toolbar = findViewById<Toolbar>(R.id.toolbar)
+
+                val toggle = ActionBarDrawerToggle(
+                    this, drawerLayout, toolbar,
+                    R.string.navigation_drawer_open,
+                    R.string.navigation_drawer_close
+                )
+                drawerLayout.addDrawerListener(toggle)
+                toggle.syncState()
+
+                AppLogs.log("MainActivity", "Hamburger menu initialized")
+                Log.d("MainActivity", "Hamburger menu initialized")
+
+                navigationView.setNavigationItemSelectedListener { item ->
+                    try
+                    {
+                        when (item.itemId)
+                        {
+                            R.id.nav_new_post ->
+                            {
+                                AppLogs.log("MainActivity", "Menu: New Post clicked")
+                                Log.d("MainActivity", "Menu: New Post clicked")
+                                startActivity(Intent(this, NewPostActivity::class.java))
+                            }
+                            R.id.nav_logout ->
+                            {
+                                AppLogs.log("MainActivity", "Menu: Logout clicked")
+                                Log.d("MainActivity", "Menu: Logout clicked")
+                                FirebaseAuth.getInstance().signOut()
+                                AppLogs.log("MainActivity", "User signed out via menu")
+                                Log.d("MainActivity", "User signed out via menu")
+                                startActivity(Intent(this, Login::class.java))
+                                finish()
+                            }
+                            R.id.nav_settings ->
+                            {
+                                AppLogs.log("MainActivity", "Menu: Settings clicked")
+                                Log.d("MainActivity", "Menu: Settings clicked")
+                                Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        drawerLayout.closeDrawers()
+                        true
+                    }
+                    catch (e: Exception)
+                    {
+                        AppLogs.log("MainActivity", "Error handling menu item: ${e.message}")
+                        Log.e("MainActivity", "Error handling menu item: ${e.message}")
+                        false
+                    }
+                }
+            }
+            catch (e: Exception)
+            {
+                AppLogs.log("MainActivity", "Hamburger menu setup failed: ${e.message}")
+                Log.e("MainActivity", "Hamburger menu setup failed: ${e.message}")
+            }
+            //endregion
 
             //region Map Setup
             try
