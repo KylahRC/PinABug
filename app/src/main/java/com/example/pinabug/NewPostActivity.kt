@@ -184,10 +184,15 @@ class NewPostActivity : AppCompatActivity()
         val postsArray: JSONArray =
             if (file.exists())
             {
+                AppLogs.log("NewPostActivity", "JSON File already exists")
+                Log.d("NewPostActivity", "JSON File already exists")
                 JSONArray(file.readText())
+
             }
             else
             {
+                AppLogs.log("NewPostActivity", "JSON File does not exist, will be made")
+                Log.d("NewPostActivity", "JSON File does not exist, will be made")
                 JSONArray()
             }
 
@@ -204,6 +209,8 @@ class NewPostActivity : AppCompatActivity()
 
         AppLogs.log("NewPostActivity", "Post saved: ${post.name}")
         Log.d("NewPostActivity", "Post saved: ${post.name}")
+
+        finish()
     }
 
     //endregion

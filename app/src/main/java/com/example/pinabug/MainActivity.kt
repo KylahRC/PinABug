@@ -21,6 +21,11 @@ import org.osmdroid.views.MapView
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.File
+import java.util.Date
+
 //endregion
 
 //region MainActivity Component class
@@ -31,6 +36,8 @@ class MainActivity : ComponentActivity()
     private var logoutBtn: Button? = null
     private var openNewPostBtn: Button? = null
     private var textView: TextView? = null
+
+    private var postData: TextView? = null
     private var user: FirebaseUser? = null
     private lateinit var map: MapView
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -57,6 +64,7 @@ class MainActivity : ComponentActivity()
             //region Layout Setup
             Configuration.getInstance().userAgentValue = packageName
             setContentView(R.layout.activity_main)
+            loadPostsIntoTextView()
             AppLogs.log("MainActivity", "Layout inflated successfully")
             Log.d("MainActivity", "Layout inflated successfully")
             //endregion
@@ -72,6 +80,8 @@ class MainActivity : ComponentActivity()
             logoutBtn = findViewById(R.id.logout)
             openNewPostBtn = findViewById(R.id.openNewPostBtn)
             //endregion
+
+            postData = findViewById(R.id.postData)
 
             //region Map Setup
             try
@@ -160,7 +170,8 @@ class MainActivity : ComponentActivity()
         }
         //endregion
 
-        AppLogs.log("MainActivity", "onCreate finished"); Log.d("MainActivity", "onCreate finished")
+        AppLogs.log("MainActivity", "onCreate finished")
+        Log.d("MainActivity", "onCreate finished")
     }
     //endregion
 
@@ -275,5 +286,40 @@ class MainActivity : ComponentActivity()
         }
     }
     //endregion
+
+    //region Load post data from JSON
+    private fun loadPostsIntoTextView()
+    {
+        val file = File(filesDir, "posts.json")
+        if (!file.exists())
+        {
+            postData?.text = "No posts yet."
+            return
+        }
+
+        val postsArray = JSONArray(file.readText())
+        val builder = StringBuilder()
+
+        for (i in 0 until postsArray.length())
+        {
+            val obj: JSONObject = postsArray.getJSONObject(i)
+            builder.append("Name: ${obj.optString("name")}\n")
+            builder.append("Time: ${Date(obj.optLong("timestamp"))}\n")
+            builder.append("Location: ${obj.optDouble("latitude", Double.NaN)}, ${obj.optDouble("longitude", Double.NaN)}\n")
+            builder.append("Image: ${obj.optString("imageUri")}\n\n")
+        }
+
+        postData?.text = builder.toString()
+    }
+    //endregion
+
+    //region Update post history
+    override fun onResume()
+    {
+        super.onResume()
+        loadPostsIntoTextView()
+    }
+    //endregion
+
 }
 //endregion
