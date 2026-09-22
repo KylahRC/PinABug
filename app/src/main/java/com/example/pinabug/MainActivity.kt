@@ -1,3 +1,10 @@
+//https://github.com/osmdroid/osmdroid/wiki
+//https://codesignal.com/learn/courses/handling-json-files-with-kotlin-2/lessons/introduction-to-json-handling-with-kotlin
+//https://codesignal.com/learn/courses/handling-json-files-with-kotlin-2/lessons/introduction-to-json-handling-in-kotlin-1
+//https://developer.android.com/develop/ui/views/components/menus?hl=en
+//https://developer.android.com/develop/ui/views/theming/themes
+
+
 //region Packages
 package com.example.pinabug
 //endregion
@@ -412,6 +419,7 @@ class MainActivity : ComponentActivity()
     }
     //endregion
 
+    //region Pins
     private fun loadPinsFromPosts()
     {
         try
@@ -471,7 +479,7 @@ class MainActivity : ComponentActivity()
             Log.e("MainActivity", "Error loading pins: ${e.message}")
         }
     }
-
+    //endregion
 
 }
 //endregion

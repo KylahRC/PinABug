@@ -1,4 +1,12 @@
+//https://github.com/osmdroid/osmdroid/wiki
+//https://codesignal.com/learn/courses/handling-json-files-with-kotlin-2/lessons/introduction-to-json-handling-with-kotlin
+//https://codesignal.com/learn/courses/handling-json-files-with-kotlin-2/lessons/introduction-to-json-handling-in-kotlin-1
+//https://developer.android.com/develop/ui/views/components/menus?hl=en
+//https://developer.android.com/develop/ui/views/theming/themes
+
+//region Packages
 package com.example.pinabug
+//endregion
 
 //region Imports
 import android.content.Intent
@@ -34,7 +42,8 @@ class SettingsActivity : AppCompatActivity()
             themeSwitch.isChecked = isBrownTheme
 
             themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-                try {
+                try
+                {
                     val editor = prefs.edit()
                     editor.putBoolean("BrownTheme", isChecked)
                     editor.apply()
@@ -47,7 +56,9 @@ class SettingsActivity : AppCompatActivity()
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                     finish()
-                } catch (e: Exception) {
+                }
+                catch (e: Exception)
+                {
                     AppLogs.log("SettingsActivity", "Error toggling theme: ${e.message}")
                     Log.e("SettingsActivity", "Error toggling theme: ${e.message}")
                 }
