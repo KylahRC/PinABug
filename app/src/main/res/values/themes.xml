@@ -2,4 +2,12 @@
 <resources>
 
     <style name="Theme.PinABug" parent="Theme.Material3.Dark.NoActionBar" />
+    <style name="Theme.PinABug.Brown" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:colorBackground">#6D4C41</item> <!-- Dark brown -->
+        <item name="colorPrimaryVariant">#5D4037</item>
+        <item name="colorPrimary">#A1887F</item> <!-- Light brown -->
+        <item name="colorSecondary">#EFEBE9</item> <!-- Beige -->
+        <item name="colorOnPrimary">#FFFFFF</item>
+    </style>
+
 </resources>

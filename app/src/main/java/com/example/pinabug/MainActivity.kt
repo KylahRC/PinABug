@@ -70,6 +70,18 @@ class MainActivity : ComponentActivity()
         {
             //region Layout Setup
             Configuration.getInstance().userAgentValue = packageName
+            val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+            val isBrownTheme = prefs.getBoolean("BrownTheme", false)
+
+            if (isBrownTheme)
+            {
+                setTheme(R.style.Theme_PinABug_Brown)
+            }
+            else
+            {
+                setTheme(R.style.Theme_PinABug)
+            }
+
             setContentView(R.layout.activity_main)
             loadPostsIntoTextView()
             AppLogs.log("MainActivity", "Layout inflated successfully")
@@ -137,7 +149,8 @@ class MainActivity : ComponentActivity()
                             {
                                 AppLogs.log("MainActivity", "Menu: Settings clicked")
                                 Log.d("MainActivity", "Menu: Settings clicked")
-                                Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show()
+
+                                startActivity(Intent(this, SettingsActivity::class.java))
                             }
                         }
                         drawerLayout.closeDrawers()

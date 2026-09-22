@@ -14,11 +14,17 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+
 //endregion
 
 //region NewPostActivity Class
@@ -31,6 +37,8 @@ class NewPostActivity : AppCompatActivity()
     private lateinit var postBtn: Button
     private lateinit var cancelBtn: Button
     private var imageUri: Uri? = null
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
     //endregion
 
     //region Main Logic
@@ -41,7 +49,17 @@ class NewPostActivity : AppCompatActivity()
         {
             AppLogs.log("NewPostActivity", "onCreate started")
             Log.d("NewPostActivity", "onCreate started")
+            val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+            val isBrownTheme = prefs.getBoolean("BrownTheme", false)
 
+            if (isBrownTheme)
+            {
+                setTheme(R.style.Theme_PinABug_Brown)
+            }
+            else
+            {
+                setTheme(R.style.Theme_PinABug)
+            }
             setContentView(R.layout.activity_new_post)
 
             //region UI Setup
@@ -51,6 +69,71 @@ class NewPostActivity : AppCompatActivity()
             cancelBtn = findViewById(R.id.cancelBtn)
             AppLogs.log("NewPostActivity", "UI setup complete")
             Log.d("NewPostActivity", "UI setup complete")
+            //endregion
+
+            //region Menu
+            try
+            {
+                drawerLayout = findViewById(R.id.drawerLayout)
+                navigationView = findViewById(R.id.navigationView)
+                val toolbar = findViewById<Toolbar>(R.id.toolbar)
+
+                val toggle = ActionBarDrawerToggle(
+                    this, drawerLayout, toolbar,
+                    R.string.navigation_drawer_open,
+                    R.string.navigation_drawer_close
+                )
+                drawerLayout.addDrawerListener(toggle)
+                toggle.syncState()
+
+                AppLogs.log("MainActivity", "Hamburger menu initialized")
+                Log.d("MainActivity", "Hamburger menu initialized")
+
+                navigationView.setNavigationItemSelectedListener { item ->
+                    try
+                    {
+                        when (item.itemId)
+                        {
+                            R.id.nav_new_post ->
+                            {
+                                AppLogs.log("MainActivity", "Menu: New Post clicked")
+                                Log.d("MainActivity", "Menu: New Post clicked")
+                                startActivity(Intent(this, NewPostActivity::class.java))
+                            }
+                            R.id.nav_logout ->
+                            {
+                                AppLogs.log("MainActivity", "Menu: Logout clicked")
+                                Log.d("MainActivity", "Menu: Logout clicked")
+                                FirebaseAuth.getInstance().signOut()
+                                AppLogs.log("MainActivity", "User signed out via menu")
+                                Log.d("MainActivity", "User signed out via menu")
+                                startActivity(Intent(this, Login::class.java))
+                                finish()
+                            }
+                            R.id.nav_settings ->
+                            {
+                                AppLogs.log("MainActivity", "Menu: Settings clicked")
+                                Log.d("MainActivity", "Menu: Settings clicked")
+
+                                startActivity(Intent(this, SettingsActivity::class.java))
+                            }
+                        }
+                        drawerLayout.closeDrawers()
+                        true
+                    }
+                    catch (e: Exception)
+                    {
+                        AppLogs.log("MainActivity", "Error handling menu item: ${e.message}")
+                        Log.e("MainActivity", "Error handling menu item: ${e.message}")
+                        false
+                    }
+                }
+            }
+            catch (e: Exception)
+            {
+                AppLogs.log("MainActivity", "Hamburger menu setup failed: ${e.message}")
+                Log.e("MainActivity", "Hamburger menu setup failed: ${e.message}")
+            }
             //endregion
 
             //region Button Listeners
