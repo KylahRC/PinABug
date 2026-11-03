@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PinABug</string>
+    <string name="login">Teken In</string>
+    <string name="email">E-pos</string>
+    <string name="password">Wagwoord</string>
+    <string name="btn_login">Teken In</string>
+    <string name="register">Registreer</string>
+    <string name="btn_register">Registreer</string>
+    <string name="click_to_login">Klik om aan te meld</string>
+    <string name="click_to_register">Klik om te registreer</string>
+    <string name="logout">Teken Uit</string>
+    <string name="navigation_drawer_open">Maak navigasiekieslys oop</string>
+    <string name="navigation_drawer_close">Maak navigasiekieslys toe</string>
+    <string name="Add_New_Post">Voeg Nuwe Plasing By</string>
+    <string name="bugname">Inseknaam (opsioneel)</string>
+    <string name="Post">Plaas</string>
+    <string name="Cancel">Kanselleer</string>
+    <string name="Enable_Brown_Theme">Aktiveer Bruin Tema</string>
+    <string name="Clear_Post_History">Vee Plasinggeskiedenis Uit</string>
+</resources>

@@ -11,17 +11,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Enable Brown Theme"
-        tools:ignore="MissingConstraints"
+        android:text="@string/Enable_Brown_Theme"
+        tools:ignore="MissingConstraints,UseSwitchCompatOrMaterialXml"
         android:layout_marginTop="66dp"
         />
+
 
     <Button
         android:id="@+id/clearPostsBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Clear Post History"
+        android:text="@string/Clear_Post_History"
         android:layout_marginTop="30dp"
-        app:layout_constraintTop_toBottomOf="@+id/themeSwitch" />
+        app:layout_constraintTop_toBottomOf="@+id/themeSwitch"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

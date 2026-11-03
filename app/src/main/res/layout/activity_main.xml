@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginTop="66dp"
-        android:text="Add New Post"
+        android:text="@string/Add_New_Post"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText,MissingConstraints"
         tools:layout_editor_absoluteX="16dp" />

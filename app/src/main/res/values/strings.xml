@@ -11,4 +11,10 @@
     <string name="logout">Logout</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="Add_New_Post">Add New Post</string>
+    <string name="bugname">Bug name (optional)</string>
+    <string name="Post">Post</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Enable_Brown_Theme">Enable Brown Theme</string>
+    <string name="Clear_Post_History">Clear Post History</string>
 </resources>
