@@ -15,3 +15,5 @@ Find the video in my submission via ARC, as I did not feel comfortable uploading
 
 # AI Disclosure
 My use of AI tools falls within the guidelines outlined in the 2026 AI Guidelines. I maintain all creative control, meaning the ideas and how they look in the app was decided entirely by me. All code snippets and debugging assistance received was thoroughly reformatted and tested by me on my personal device, as seen by my distinct code formatting style.
+
+###### In memory of my sweet chicken Nugget, you were so small and so loved...
